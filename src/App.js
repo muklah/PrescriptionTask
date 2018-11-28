@@ -1,28 +1,92 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
+import ReactDOM from 'react-dom'
+import styled from 'styled-components'
+
+import firebase from 'firebase';
+import ReactModal from 'react-modal'
+
+import Context from './Context';
+
+import Header from './Header'
+import PrescriptionsList from './PrescriptionsList'
+
+var config = {
+    apiKey: "AIzaSyC4X6dHh0oI2eR-2Q_XrpNPrdGn83A8M_g",
+    authDomain: "fikracamps-d4b4d.firebaseapp.com",
+    databaseURL: "https://fikracamps-d4b4d.firebaseio.com",
+    projectId: "fikracamps-d4b4d",
+    storageBucket: "fikracamps-d4b4d.appspot.com",
+    messagingSenderId: "832956564243"
+};
+firebase.initializeApp(config);
 
 class App extends Component {
-  render() {
-    return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
-      </div>
-    );
+    constructor() {
+      super()
+      this.state = {
+        prescriptions: [{}],
+        age: '',
+        name: '',
+        modalState: false,
+      }
+  
+      firebase.firestore().collection('prescriptions').orderBy('date', 'asc').onSnapshot((snapshot)=>{
+        let prescriptions = []
+  
+        snapshot.forEach((doc)=>{
+          prescriptions.push(doc.data())
+          this.setState({
+            prescriptions: prescriptions
+          })
+        })
+      })
+  
+    }
+  
+    render() {
+      return (
+        <Context.Provider value={{
+          state: this.state,
+          actions: {
+            addPrescription: () => {
+  
+              firebase.firestore().collection('prescriptions').add({
+                name: 'Muklah',
+                age: '26',
+                drugs: 'Drugs',
+                date: Date.now()
+              })
+           
+            },
+            toggle: ()=>{
+              this.setState({
+                modalState: !this.state.modalState
+              })
+            },
+            onChangeName: (value) =>{
+              this.setState({
+                name: value
+              })
+            },
+            onChangeAge: (value) =>{
+              this.setState({
+                age: value
+              })
+            },
+            onChangeDrugs: (value) =>{
+              this.setState({
+                drugs: value
+              })
+            }
+          }
+        }}>
+          <Header />
+          <PrescriptionsList />
+        </Context.Provider>
+      )
+    }
   }
-}
-
-export default App;
+  
+  export default App;
+  
