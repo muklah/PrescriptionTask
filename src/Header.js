@@ -6,7 +6,7 @@ import styled from 'styled-components'
 import firebase from 'firebase';
 import ReactModal from 'react-modal'
 import Context from './Context';
-import { Autocomplete } from "evergreen-ui";
+import { Autocomplete, TextInput } from "evergreen-ui";
 
 let Button = styled.button`
   background-color: #466AB3;
@@ -18,7 +18,7 @@ let Button = styled.button`
   min-width: 100px;
 `
 
-let TextInput = styled.input`
+let TextInput2 = styled.input`
   display: block;
   border: 2px solid #000;
   width: 100%;
@@ -40,11 +40,31 @@ class Header extends React.Component {
     constructor() {
         super()
         this.state = {
-
+            drugsList: [],
+            selectedDrugs: [],
+            name: '',
+            age: '',
         }
+
+        fetch('https://api.fda.gov/drug/label.json?count=openfda.brand_name.exact&limit=1000').then((response) => {
+            return response.json()
+        }).then((result) => {
+            let drugs = result.results
+            let drugsList = [];
+            drugs.map((item, i) => {
+                drugsList.push(item.term)
+            })
+            this.setState({ drugsList })
+            // console.log(this.state.drugsList)
+        }).catch((error) => {
+            console.log(error)
+        })
     }
 
     render() {
+        let { drugsList } = this.state
+        // console.log(drugsList);
+        
         return (
             <Context.Consumer>
                 {
@@ -56,55 +76,53 @@ class Header extends React.Component {
                                         FikraCamps
                     </h1>
                                     <TextInput
-                                        onChange={(event) => { ctx.actions.onChangeName(event.target.value) }}
-                                        value={ctx.state.name}
+                                        onChange={(event) => { this.setState({name: event.target.value}) }}
+                                        value={this.state.name}
                                         placeholder="Name"
                                         type="text" />
 
                                     <TextInput
-                                        onChange={(event) => { ctx.actions.onChangeAge(event.target.value) }}
-                                        value={ctx.state.age}
+                                        onChange={(event) => { this.setState({age: event.target.value}) }}
+                                        value={this.state.age}
                                         placeholder="Age"
                                         type="text" />
 
-                                    <TextInput
-                                        onChange={(event) => { ctx.actions.onChangeDrugs(event.target.value) }}
-                                        value={ctx.state.drugs}
-                                        placeholder="Drugs"
-                                        type="text" />
-
-                                    {/* <Autocomplete
+                                    <Autocomplete
                                         title="Fruits"
-                                        onChange={(changedItem) => console.log(changedItem)}
-                                        items={['Apple', 'Apricot', 'Banana', 'Cherry', 'Cucumber']}
+                                        items={drugsList}
                                     >
                                         {(props) => {
                                             const { getInputProps, getRef, inputValue } = props
                                             return (
                                                 <TextInput
                                                     placeholder="Fruits"
-                                                    value={inputValue}
+                                                    value={this.state.drugs}
+                                                    onKeyUp={(event) => {
+                                                        if (event.key == "Enter") {
+                                                                  
+                                                                let selectedDrugs = this.state.selectedDrugs
+                                                                selectedDrugs.push(inputValue)
+                                                                this.setState({selectedDrugs})
+                                                            props.clearSelection()
+                                                        }
+                                                    }}
                                                     innerRef={getRef}
                                                     {...getInputProps()}
                                                 />
                                             )
                                         }}
-                                    </Autocomplete> */}
-
+                                    </Autocomplete>
+                                     {
+                                         this.state.selectedDrugs.map((item, i) => {
+                                             return <span key={i}> {item}</span>
+                                         })
+                                     }
                                     <Button onClick={() => {
-
-                                        firebase.firestore().collection('prescriptions').add({
-                                            age: ctx.state.age,
-                                            name: ctx.state.name,
-                                            drugs: ctx.state.drugs,
-                                            date: Date.now()
-                                        })
-
+                                        ctx.actions.addPrescription(this.state.name, this.state.age, this.state.selectedDrugs)
                                         ctx.actions.toggle()
                                     }}>Save</Button>
 
                                 </ReactModal>
-                                {/* <img width="120px;" src={require('./assets/logo.png')} /> */}
                                 <Button onClick={() => {
                                     ctx.actions.toggle()
                                 }}>Create New Prescription</Button>

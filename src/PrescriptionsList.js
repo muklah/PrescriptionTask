@@ -38,7 +38,7 @@ class PrescriptionsList extends React.Component {
           return <Container>
             {
               ctx.state.prescriptions.map((item, i) => {
-                return <Prescription key={i}>{item.name}</Prescription>
+                return <Prescription key={i}>{item.name} {item.age}</Prescription>
               })
             }
           </Container>
