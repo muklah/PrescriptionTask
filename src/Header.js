@@ -64,7 +64,7 @@ class Header extends React.Component {
     render() {
         let { drugsList } = this.state
         // console.log(drugsList);
-        
+
         return (
             <Context.Consumer>
                 {
@@ -76,13 +76,13 @@ class Header extends React.Component {
                                         FikraCamps
                     </h1>
                                     <TextInput
-                                        onChange={(event) => { this.setState({name: event.target.value}) }}
+                                        onChange={(event) => { this.setState({ name: event.target.value }) }}
                                         value={this.state.name}
                                         placeholder="Name"
                                         type="text" />
 
                                     <TextInput
-                                        onChange={(event) => { this.setState({age: event.target.value}) }}
+                                        onChange={(event) => { this.setState({ age: event.target.value }) }}
                                         value={this.state.age}
                                         placeholder="Age"
                                         type="text" />
@@ -99,10 +99,10 @@ class Header extends React.Component {
                                                     value={this.state.drugs}
                                                     onKeyUp={(event) => {
                                                         if (event.key == "Enter") {
-                                                                  
-                                                                let selectedDrugs = this.state.selectedDrugs
-                                                                selectedDrugs.push(inputValue)
-                                                                this.setState({selectedDrugs})
+
+                                                            let selectedDrugs = this.state.selectedDrugs
+                                                            selectedDrugs.push(inputValue)
+                                                            this.setState({ selectedDrugs })
                                                             props.clearSelection()
                                                         }
                                                     }}
@@ -112,11 +112,11 @@ class Header extends React.Component {
                                             )
                                         }}
                                     </Autocomplete>
-                                     {
-                                         this.state.selectedDrugs.map((item, i) => {
-                                             return <span key={i}> {item}</span>
-                                         })
-                                     }
+                                    {
+                                        this.state.selectedDrugs.map((item, i) => {
+                                            return <span key={i}> {item}</span>
+                                        })
+                                    }
                                     <Button onClick={() => {
                                         ctx.actions.addPrescription(this.state.name, this.state.age, this.state.selectedDrugs)
                                         ctx.actions.toggle()

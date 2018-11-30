@@ -30,6 +30,7 @@ class App extends Component {
       name: '',
       drugs: [],
       modalState: false,
+      printModalState: false,
     }
 
     firebase.firestore().collection('prescriptions').orderBy('date', 'asc').onSnapshot((snapshot) => {
@@ -50,6 +51,20 @@ class App extends Component {
       <Context.Provider value={{
         state: this.state,
         actions: {
+
+          getPrescription: (id) => {
+            var docRef = firebase.collection("prescriptions").doc(id);
+            docRef.get().then(function(doc) {
+                if (doc.exists) {
+                    console.log("Document data:", doc.data());
+                } else {
+                    console.log("No such document!");
+                }
+            }).catch(function(error) {
+                console.log("Error getting document:", error);
+            });
+        },
+
           addPrescription: (name, age, drugs) => {
             firebase.firestore().collection('prescriptions').add({
               age: age,
@@ -59,9 +74,18 @@ class App extends Component {
           })
 
           },
+
+         
+
+
           toggle: () => {
             this.setState({
               modalState: !this.state.modalState
+            })
+          },
+          printToggle: () => {
+            this.setState({
+              printModalState: !this.state.printModalState
             })
           },
           onChangeName: (value) => {

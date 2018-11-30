@@ -5,6 +5,7 @@
   "dependencies": {
     "evergreen-ui": "^4.7.1",
     "firebase": "^5.5.9",
+    "print-js": "^1.0.53",
     "react": "^16.6.3",
     "react-dom": "^16.6.3",
     "react-modal": "^3.6.1",
