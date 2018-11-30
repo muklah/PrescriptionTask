@@ -1,42 +1,43 @@
 import React, { Component } from 'react';
 import './App.css';
-import ReactDOM from 'react-dom'
 import styled from 'styled-components'
-import print from 'print-js'
-
-import firebase from 'firebase';
 import ReactModal from 'react-modal'
-
 import Context from './Context';
-import { Button, Icon, Dialog, Pane } from 'evergreen-ui'
+import { Button } from "evergreen-ui";
 
-let Container = styled.main`
-  background-color: white;
-  min-height: 500px;
-  padding: 10px 10%;
+let MainContainer = styled.main`
+background-color: rgba(245, 246, 250, 0.8);
+  padding: 20px 10%;
 `
 
-// let Button = styled.button`
-//   background-color: #466AB3;
-//   padding: 10px;
-//   border-radius: 8px;
-//   border: none;
-//   color: white;
-//   font-weight: bold;
-//   min-width: 100px;
-// `
+let PrescriptionsContainer = styled.div`
+background-color: rgba(245, 246, 250, 0.8);
+  padding: 20px 10%;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+`
 
-let Prescription = styled.div`
-  height: 80px;
-  border: 1px solid;
-  background: #fff;
+let PrescriptionItem = styled.div`
+  background-color: #fff;
+  border: 2px solid #E5E9F2;
+  min-height: 150px;
+  margin: 20px 20px;
   border-radius: 4px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: sans-serif;
-  font-size: 2rem;
-  margin-top: 20px;
+  min-width: 350px;
+  padding: 10px;
+`
+
+let Buttons = styled.button`
+background-color: #466AB3;
+padding: 10px;
+border-radius: 8px;
+border: none;
+color: white;
+font-weight: bold;
+min-width: 100px;
+margin: 20px;
 `
 
 class PrescriptionsList extends React.Component {
@@ -53,61 +54,58 @@ class PrescriptionsList extends React.Component {
         {(ctx) => {
 
           return (
-            <main className="container">
+            <MainContainer>
               <ReactModal isOpen={ctx.state.printModalState}>
                 <div>
                   {
                     this.state.prescription != '' ?
                       <div>
-                        <p>{this.state.prescription.name} </p>
-                        <p>{this.state.prescription.age} </p>
-                        <ul>{this.state.prescription.drugs.map((item,i)=>{
-                              return <li key={i}>{item}</li>
+                        <p>Name: {this.state.prescription.name} </p>
+                        <p>Age: {this.state.prescription.age} </p>
+                        <ul>Drugs: {this.state.prescription.drugs.map((item, i) => {
+                          return <li key={i}>{item}</li>
                         })} </ul>
                       </div>
-                      : ''                   
+                      : ''
                   }
                 </div>
 
-                <Button onClick={() => {
+                <Buttons onClick={() => {
+                  window.print()
+                }}>Print</Buttons>
+
+                <Buttons onClick={() => {
                   ctx.actions.printToggle()
-                }}>Print</Button>
+                }}>Cancel</Buttons>
+
               </ReactModal>
 
-              <p>Prescriptions List</p>
-
-              {
-                ctx.state.prescriptions.map((item, i) => {
-                  return (
-                    <div key={i} >
-                      <p># {item.name}</p>
-                      <div>
-                        <Button onClick={() => {
-
-                          this.setState({ prescription: item })
-                          ctx.actions.printToggle()
-                        }}>View</Button>
-                      </div>
-                    </div>
-                  )
-                })
-              }
-
-            </main>
+              <h2>Prescriptions List</h2>
+              <PrescriptionsContainer>
+                {
+                  ctx.state.prescriptions.map((item, i) => {
+                    return (
+                      <PrescriptionItem>
+                        <div key={i} >
+                          <p>Name: {item.name}</p>
+                          <p>Date: {item.date}</p>
+                          <div>
+                            <Button onClick={() => {
+                              this.setState({ prescription: item })
+                              ctx.actions.printToggle()
+                            }}>View</Button>
+                          </div>
+                        </div>
+                      </PrescriptionItem>
+                    )
+                  })
+                }
+              </PrescriptionsContainer>
+            </MainContainer>
           )
 
         }}
-        {/* {(ctx) => {
-          return <Container>
-            {
-              ctx.state.prescriptions.map((item, i) => {
-                return <Prescription key={i}>{item.name} {item.age}</Prescription>
-              })
-              
-            }
-            <Button >Remove</Button>
-          </Container>
-        }} */}
+
       </Context.Consumer>
     )
   }

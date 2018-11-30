@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import ReactDOM from 'react-dom'
 import styled from 'styled-components'
-
-import firebase from 'firebase';
 import ReactModal from 'react-modal'
 import Context from './Context';
 import { Autocomplete, TextInput } from "evergreen-ui";
@@ -16,23 +13,31 @@ let Button = styled.button`
   color: white;
   font-weight: bold;
   min-width: 100px;
+  margin: 20px;
 `
 
-let TextInput2 = styled.input`
-  display: block;
-  border: 2px solid #000;
-  width: 100%;
-  margin: 10px 0px;
-  height: 40px;
-  font-size: 1.4rem;
+let TextInputsContainer = styled.div`
+min-height: 150px;
+margin: 20px 0px;
+display: flex;
+flex-direction: column;
+justify-content: space-between;
+padding: 10px;
 `
+
+let ButtonsContainer = styled.div`
+margin: 50px 0px;
+display: flex;
+padding: 10px;
+`
+
 let Navigation = styled.header`
-  background-color: #fff;
-  height: 120px;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
   padding: 0px 10%;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0px 2px 25px rgba(0,0,0,0.16);
+  height: 100px;
 `
 
 class Header extends React.Component {
@@ -55,7 +60,6 @@ class Header extends React.Component {
                 drugsList.push(item.term)
             })
             this.setState({ drugsList })
-            // console.log(this.state.drugsList)
         }).catch((error) => {
             console.log(error)
         })
@@ -63,7 +67,6 @@ class Header extends React.Component {
 
     render() {
         let { drugsList } = this.state
-        // console.log(drugsList);
 
         return (
             <Context.Consumer>
@@ -71,60 +74,72 @@ class Header extends React.Component {
                     (ctx) => {
                         return (
                             <Navigation>
-                                <ReactModal isOpen={ctx.state.modalState}>
+                                <ReactModal isOpen={ctx.state.createModalState}>
                                     <h1>
-                                        FikraCamps
+                                        New Prescription
                     </h1>
-                                    <TextInput
-                                        onChange={(event) => { this.setState({ name: event.target.value }) }}
-                                        value={this.state.name}
-                                        placeholder="Name"
-                                        type="text" />
+                                    <TextInputsContainer>
+                                        <TextInput
+                                            onChange={(event) => { this.setState({ name: event.target.value }) }}
+                                            value={this.state.name}
+                                            placeholder="Name"
+                                            type="text" />
 
-                                    <TextInput
-                                        onChange={(event) => { this.setState({ age: event.target.value }) }}
-                                        value={this.state.age}
-                                        placeholder="Age"
-                                        type="text" />
+                                        <TextInput
+                                            onChange={(event) => { this.setState({ age: event.target.value }) }}
+                                            value={this.state.age}
+                                            placeholder="Age"
+                                            type="text" />
 
-                                    <Autocomplete
-                                        title="Fruits"
-                                        items={drugsList}
-                                    >
-                                        {(props) => {
-                                            const { getInputProps, getRef, inputValue } = props
-                                            return (
-                                                <TextInput
-                                                    placeholder="Fruits"
-                                                    value={this.state.drugs}
-                                                    onKeyUp={(event) => {
-                                                        if (event.key == "Enter") {
+                                        <Autocomplete
+                                            title="Fruits"
+                                            items={drugsList}
+                                        >
+                                            {(props) => {
+                                                const { getInputProps, getRef, inputValue } = props
+                                                return (
+                                                    <TextInput
+                                                        placeholder="Drugs"
+                                                        value={this.state.drugs}
+                                                        onKeyUp={(event) => {
+                                                            if (event.key == "Enter") {
 
-                                                            let selectedDrugs = this.state.selectedDrugs
-                                                            selectedDrugs.push(inputValue)
-                                                            this.setState({ selectedDrugs })
-                                                            props.clearSelection()
-                                                        }
-                                                    }}
-                                                    innerRef={getRef}
-                                                    {...getInputProps()}
-                                                />
-                                            )
-                                        }}
-                                    </Autocomplete>
-                                    {
-                                        this.state.selectedDrugs.map((item, i) => {
-                                            return <span key={i}> {item}</span>
-                                        })
-                                    }
-                                    <Button onClick={() => {
-                                        ctx.actions.addPrescription(this.state.name, this.state.age, this.state.selectedDrugs)
-                                        ctx.actions.toggle()
-                                    }}>Save</Button>
+                                                                let selectedDrugs = this.state.selectedDrugs
+                                                                selectedDrugs.push(inputValue)
+                                                                this.setState({ selectedDrugs })
+                                                                props.clearSelection()
+                                                            }
+                                                        }}
+                                                        innerRef={getRef}
+                                                        {...getInputProps()}
+                                                    />
+                                                )
+                                            }}
+                                        </Autocomplete>
+                                    </TextInputsContainer>
+                                    <div>
+                                        Drugs List:
+                                        {
+                                            this.state.selectedDrugs.map((item, i) => {
+                                                return <span key={i}> {item}, </span>
+                                            })
+                                        }
+                                    </div>
+
+                                    <ButtonsContainer>
+                                        <Button onClick={() => {
+                                            ctx.actions.addPrescription(this.state.name, this.state.age, this.state.selectedDrugs)
+                                            ctx.actions.CreateToggle()
+                                        }}>Save</Button>
+
+                                        <Button onClick={() => {
+                                            ctx.actions.CreateToggle()
+                                        }}>Cancel</Button>
+                                    </ButtonsContainer>
 
                                 </ReactModal>
                                 <Button onClick={() => {
-                                    ctx.actions.toggle()
+                                    ctx.actions.CreateToggle()
                                 }}>Create New Prescription</Button>
                             </Navigation>
                         )
