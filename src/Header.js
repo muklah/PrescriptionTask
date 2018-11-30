@@ -128,7 +128,7 @@ class Header extends React.Component {
 
                                     <ButtonsContainer>
                                         <Button onClick={() => {
-                                            ctx.actions.addPrescription(this.state.name, this.state.age, this.state.selectedDrugs)
+                                            ctx.actions.addPrescription(this.state.name, this.state.age, this.state.selectedDrugs, new Date())
                                             ctx.actions.CreateToggle()
                                         }}>Save</Button>
 

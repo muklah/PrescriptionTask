@@ -65,6 +65,7 @@ class PrescriptionsList extends React.Component {
                         <ul>Drugs: {this.state.prescription.drugs.map((item, i) => {
                           return <li key={i}>{item}</li>
                         })} </ul>
+                        <p>Date: {this.state.prescription.date} </p>
                       </div>
                       : ''
                   }

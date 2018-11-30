@@ -46,14 +46,14 @@ class App extends Component {
         state: this.state,
         actions: {
 
-          addPrescription: (name, age, drugs) => {
+          addPrescription: (name, age, drugs, date) => {
             firebase.firestore().collection('prescriptions').add({
               age: age,
               name: name,
               drugs: drugs,
-              date: Date.now()
+              date: date.toLocaleString()
             })
-
+            
           },
 
           CreateToggle: () => {
